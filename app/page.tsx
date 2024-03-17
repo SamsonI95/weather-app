@@ -9,6 +9,7 @@ import Container from "./Component/Container";
 import { convertKelvinToCelcius } from "./utils/convertKelvinToCelcius";
 import { RxDoubleArrowUp } from "react-icons/rx";
 import { RxDoubleArrowDown } from "react-icons/rx";
+import WeahterIcon from "./Component/WeahterIcon";
 
 //Api
 //https://api.openweathermap.org/data/2.5/forecast?q=akure&appid=cc6d71e6cc19bbed0694bcae70b59d86
@@ -105,7 +106,7 @@ export default function Home() {
                 {format(parseISO(firstData?.dt_txt ?? ""), "dd.MM.yyyy")}{" "}
               </p>
             </h2>
-            <Container className="gap-10 px-6 items-center">
+            <Container className="flex gap-10 px-6 items-center">
               {/*Temperature*/}
               <div className="flex flex-col px-4">
                 <span className="text-5xl">
@@ -118,7 +119,7 @@ export default function Home() {
                   </span>
                 </p>
                 <p className="text-xs space-x-2 flex items-center">
-                <span className="flex items-center">
+                  <span className="flex items-center">
                     {convertKelvinToCelcius(firstData?.main.temp_min ?? 0)}°
                     <RxDoubleArrowDown />
                   </span>
@@ -130,7 +131,17 @@ export default function Home() {
               </div>
 
               {/*Time and weather icon*/}
-              <div className="flex gap-10 sm:gap-16 overflow-x-auto w-full justify-between"></div>
+              <div className="flex gap-10 sm:gap-16 overflow-x-auto w-full justify-between pr-3">
+                {data?.list.map((d, i) => (
+                  <div key={i} className="flex flex-col justify-between gap-2 items-center text-xs font-semibold">
+                    <p className="whitespace-nowrap">
+                      {format(parseISO(d.dt_txt), "h:mm a")}
+                    </p>
+                    <WeahterIcon iconName={d.weather[0].icon}/>
+                    <p>{convertKelvinToCelcius(d?.main.temp ?? 0)}°</p>
+                  </div>
+                ))}
+              </div>
             </Container>
           </div>
         </section>
