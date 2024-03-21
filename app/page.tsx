@@ -9,7 +9,12 @@ import Container from "./Component/Container";
 import { convertKelvinToCelcius } from "./utils/convertKelvinToCelcius";
 import { RxDoubleArrowUp } from "react-icons/rx";
 import { RxDoubleArrowDown } from "react-icons/rx";
-import WeahterIcon from "./Component/WeahterIcon";
+import WeahterIcon from "./Component/WeatherIcon";
+import { getDayOrNightIcon } from "./utils/getDayOrNightIcon";
+import WeatherDetails from "./Component/WeatherDetails";
+import { metersToKilometers } from "./utils/metersToKilometers";
+import { convertWindSpeed } from "./utils/convertWindSpeed";
+import ForecastWeatherDetail from "./Component/ForecastWeatherDetail";
 
 //Api
 //https://api.openweathermap.org/data/2.5/forecast?q=akure&appid=cc6d71e6cc19bbed0694bcae70b59d86
@@ -133,21 +138,56 @@ export default function Home() {
               {/*Time and weather icon*/}
               <div className="flex gap-10 sm:gap-16 overflow-x-auto w-full justify-between pr-3">
                 {data?.list.map((d, i) => (
-                  <div key={i} className="flex flex-col justify-between gap-2 items-center text-xs font-semibold">
+                  <div
+                    key={i}
+                    className="flex flex-col justify-between gap-2 items-center text-xs font-semibold"
+                  >
                     <p className="whitespace-nowrap">
                       {format(parseISO(d.dt_txt), "h:mm a")}
                     </p>
-                    <WeahterIcon iconName={d.weather[0].icon}/>
+                    {/* <WeahterIcon iconName={d.weather[0].icon}/> */}
+                    <WeahterIcon
+                      iconName={getDayOrNightIcon(d.weather[0].icon, d.dt_txt)}
+                    />
                     <p>{convertKelvinToCelcius(d?.main.temp ?? 0)}°</p>
                   </div>
                 ))}
               </div>
             </Container>
           </div>
+          <div className="flex gap-4">
+            {/* left */}
+            <Container className="w-fit justify-center flex-col px-4 items-center">
+              <p className="capitalize text-center">
+                {firstData?.weather[0].description}
+              </p>
+              <WeahterIcon
+                iconName={getDayOrNightIcon(
+                  firstData?.weather[0].icon ?? "",
+                  firstData?.dt_txt ?? ""
+                )}
+              />
+            </Container>
+            <Container className="flex bg-yellow-300/80 px-6 gap-4 justify-between overflow-x-auto">
+              <WeatherDetails
+                visibility={metersToKilometers(firstData?.visibility ?? 10000)}
+                airPressure={`${firstData?.main.pressure} hPa`}
+                humidity={`${firstData?.main.humidity}%`}
+                sunrise={format(data?.city.sunrise ?? 1702949452, "H:mm")}
+                // sunrise={}
+                sunset={format(data?.city.sunset ?? 1702517657, "H:mm")}
+                windSpeed={convertWindSpeed(firstData?.wind.speed ?? 1.64)}
+              />
+            </Container>
+            {/* right */}
+          </div>
         </section>
 
         {/*7 day forecast data*/}
-        <section></section>
+        <section className="flex w-full flex-col gap-4">
+          <p className="text-2xl">Forecast (7 days)</p>
+          <ForecastWeatherDetail/>
+        </section>
       </main>
     </div>
   );

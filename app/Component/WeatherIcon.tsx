@@ -12,7 +12,7 @@ export default function WeahterIcon(
         height={100}
         alt="weather-icon"
         className="absolute h-full w-full"
-        src={"https://openweathermap.org/img/wn/${props.iconName}@2x.png"}
+        src={`https://openweathermap.org/img/wn/${props.iconName}@2x.png`}
       />
     </div>
   );
