@@ -4,7 +4,7 @@ import Image from "next/image";
 import Navbar from "./Component/Navbar";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { format, parseISO } from "date-fns";
+import { format, fromUnixTime, parseISO } from "date-fns";
 import Container from "./Component/Container";
 import { convertKelvinToCelcius } from "./utils/convertKelvinToCelcius";
 import { RxDoubleArrowUp } from "react-icons/rx";
@@ -86,6 +86,23 @@ export default function Home() {
   const firstData = data?.list[0];
 
   console.log("data", data?.city);
+
+  const uniqueDates = [
+    ...new Set(
+      data?.list.map(
+        (entry) => new Date(entry.dt * 1000).toISOString().split("T")[0]
+      )
+    ),
+  ];
+
+  // Filtering data to get the first entry after 6 AM for each unique date
+  const firstDataForEachDate = uniqueDates.map((date) => {
+    return data?.list.find((entry) => {
+      const entryDate = new Date(entry.dt * 1000).toISOString().split("T")[0];
+      const entryTime = new Date(entry.dt * 1000).getHours();
+      return entryDate === date && entryTime >= 6;
+    });
+  });
 
   if (isPending)
     return (
@@ -186,7 +203,33 @@ export default function Home() {
         {/*7 day forecast data*/}
         <section className="flex w-full flex-col gap-4">
           <p className="text-2xl">Forecast (7 days)</p>
-          <ForecastWeatherDetail/>
+          {firstDataForEachDate.map((d, i) => {
+            return (
+              <ForecastWeatherDetail
+                key={i}
+                description={d?.weather[0].description ?? ""}
+                weatherIcon={d?.weather[0].icon ?? "01d"}
+                date={d ? format(parseISO(d.dt_txt), "dd.MM") : ""}
+                day={d ? format(parseISO(d.dt_txt), "EEEE") : ""}
+                feels_like={d?.main.feels_like ?? 0}
+                temp={d?.main.temp ?? 0}
+                temp_max={d?.main.temp_max ?? 0}
+                temp_min={d?.main.temp_min ?? 0}
+                airPressure={`${d?.main.pressure} hPa `}
+                humidity={`${d?.main.humidity}% `}
+                sunrise={format(
+                  fromUnixTime(data?.city.sunrise ?? 1702517657),
+                  "H:mm"
+                )}
+                sunset={format(
+                  fromUnixTime(data?.city.sunset ?? 1702517657),
+                  "H:mm"
+                )}
+                visibility={`${metersToKilometers(d?.visibility ?? 10000)} `}
+                windSpeed={`${convertWindSpeed(d?.wind.speed ?? 1.64)} `}
+              />
+            );
+          })}
         </section>
       </main>
     </div>

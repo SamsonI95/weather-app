@@ -1,11 +1,11 @@
 import React from "react";
 import Container from "./Container";
-import WeahterIcon from "./WeatherIcon";
+import WeatherIcon from "./WeatherIcon";
 import WeatherDetails, { WeatherDetailProps } from "./WeatherDetails";
 import { convertKelvinToCelcius } from "../utils/convertKelvinToCelcius";
 
 export interface ForecastWeatherDetailProps extends WeatherDetailProps {
-  weatehrIcon: string;
+  weatherIcon: string;
   date: string;
   day: string;
   temp: number;
@@ -19,9 +19,9 @@ export default function ForecastWeatherDetail(
   props: ForecastWeatherDetailProps
 ) {
   const {
-    weatehrIcon = "02d",
-    date = "19.09",
-    day = "Tuesday",
+    weatherIcon = "02d",
+    date = "21.03.2024",
+    day = "Thursday",
     temp,
     feels_like,
     temp_min,
@@ -29,14 +29,15 @@ export default function ForecastWeatherDetail(
     description,
   } = props;
 
+
   return (
-    <Container className="gap-4">
-        {/* left */}
+    <Container className="flex gap-4">
+      {/* left */}
       <section className="flex gap-4 items-center px-4">
-        <div>
-          <WeahterIcon iconName={weatehrIcon} />
+        <div className="flex flex-col gap-1 items-center">
+          <WeatherIcon iconName={weatherIcon} />
           <p>{date}</p>
-          <p className="text-sm">{day} </p>
+          <p className="text-sm">{day}</p>
         </div>
 
         {/*  */}
